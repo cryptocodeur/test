@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract CoinFlip {
+    address public owner;
+    uint256 public minimumBet = 0.1 ether;
+
+    event LogBet(address indexed player, uint256 amount, bool betOnHeads, bool won);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function flipCoin(bool betOnHeads) public payable {
+        require(msg.value >= minimumBet, "Bet amount is below the minimum.");
+        
+        // Generate a random number between 0 and 1 (0 for tails, 1 for heads)
+        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender))) % 2;
+        
+        bool playerWon = (randomNumber == 1 && betOnHeads) || (randomNumber == 0 && !betOnHeads);
+        
+        if (playerWon) {
+            // Pay out winnings (double the bet)
+            uint256 winnings = msg.value * 2;
+            payable(msg.sender).transfer(winnings);
+        }
+        
+        emit LogBet(msg.sender, msg.value, betOnHeads, playerWon);
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only the owner can withdraw");
+        payable(owner).transfer(address(this).balance);
+    }
+
+    function setMinimumBet(uint256 _newMinimumBet) public {
+        require(msg.sender == owner, "Only the owner can change the minimum bet");
+        minimumBet = _newMinimumBet;
+    }
+}
