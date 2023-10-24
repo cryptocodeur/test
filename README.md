@@ -8,4 +8,4 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
-    ///has to be modified soon
+    ///has to be modified ASAP
