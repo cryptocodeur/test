@@ -79,6 +79,111 @@ def parse_override_arguments(values: Iterable[str]) -> Dict[str, str]:
     return parsed
 
 
+def prompt(text: str) -> str:
+    """Wrapper around input() to simplify testing/mocking if needed."""
+    return input(text)
+
+
+def run_interactive_assistant(templates: Dict[str, dict]) -> str:
+    """Guide the user step-by-step to create a report without CLI knowledge."""
+    if not templates:
+        raise SystemExit("Aucun modèle disponible dans templates.json.")
+
+    print(
+        "Assistant de génération de compte-rendu\n"
+        "---------------------------------------\n"
+        "Ce mode vous guide pas à pas. Appuyez sur Entrée pour accepter les propositions.\n"
+    )
+
+    ordered_templates = list(templates.items())
+    for idx, (key, template) in enumerate(ordered_templates, start=1):
+        title = template.get("title", key)
+        description = template.get("description")
+        extra = f" — {description}" if description else ""
+        print(f"{idx}. {title} ({key}){extra}")
+
+    selected_template: dict | None = None
+    template_key: str | None = None
+    while selected_template is None:
+        choice = prompt(
+            "\nTapez le numéro du modèle souhaité ou son identifiant (ex: 1 ou veines_membres_inferieurs) : "
+        ).strip()
+        if not choice:
+            print("Veuillez sélectionner un modèle.")
+            continue
+
+        # Accept numeric selection
+        if choice.isdigit():
+            idx = int(choice) - 1
+            if 0 <= idx < len(ordered_templates):
+                template_key, selected_template = ordered_templates[idx]
+                break
+            print("Numéro invalide, merci d'essayer à nouveau.")
+            continue
+
+        # Accept template identifier
+        choice_lower = choice.lower()
+        for key, template in ordered_templates:
+            if key.lower() == choice_lower:
+                template_key, selected_template = key, template
+                break
+        if selected_template is None:
+            print("Identifiant de modèle inconnu, recommencez.")
+
+    assert selected_template is not None and template_key is not None
+
+    print(f"\nVous avez choisi : {selected_template.get('title', template_key)}\n")
+
+    header = {
+        "Patient": prompt("Nom du patient (laisser vide pour ne pas l'afficher) : ").strip(),
+        "Date": prompt(
+            "Date de l'examen (format JJ/MM/AAAA, Entrée pour aujourd'hui) : "
+        ).strip()
+        or dt.date.today().strftime("%d/%m/%Y"),
+        "Médecin": prompt("Nom du médecin (Entrée pour laisser vide) : ").strip(),
+        "Structure": prompt("Nom de la structure (Entrée pour laisser vide) : ").strip(),
+    }
+
+    overrides: Dict[str, str] = {}
+    sections = selected_template.get("sections", [])
+    if sections:
+        print(
+            "\nNous allons parcourir les sections du compte-rendu."
+            " Appuyez sur Entrée pour conserver la proposition." 
+        )
+    for section in sections:
+        name = section.get("name", "Section")
+        default_text = section.get("default", "").strip()
+        print("\n" + name)
+        print("-" * len(name))
+        if default_text:
+            print(default_text)
+        else:
+            print("(aucun texte proposé)")
+        answer = prompt(
+            "Votre texte (ou Entrée pour conserver la proposition ci-dessus) : "
+        ).strip()
+        if answer:
+            overrides[name.lower()] = answer
+
+    report = build_report(selected_template, overrides=overrides, header=header)
+    print("\nCompte-rendu généré :\n")
+    print(report)
+
+    save_choice = prompt("Enregistrer dans un fichier texte ? (o/N) : ").strip().lower()
+    if save_choice == "o":
+        default_filename = f"rapport_{template_key}_{dt.date.today().isoformat()}.txt"
+        path_input = prompt(
+            f"Nom du fichier (Entrée pour {default_filename}) : "
+        ).strip()
+        filename = path_input or default_filename
+        output_path = Path(filename).expanduser()
+        output_path.write_text(report, encoding="utf-8")
+        print(f"Fichier enregistré dans {output_path.resolve()}")
+
+    return report
+
+
 def main(argv: Iterable[str] | None = None) -> str:
     parser = argparse.ArgumentParser(
         description=(
@@ -123,6 +228,13 @@ def main(argv: Iterable[str] | None = None) -> str:
         help="Nom de la structure ou cabinet",
     )
 
+    subparsers.add_parser(
+        "assistant",
+        help=(
+            "Mode guidé interactif (idéal si vous n'êtes pas à l'aise avec la ligne de commande)"
+        ),
+    )
+
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     templates = load_templates()
@@ -149,11 +261,15 @@ def main(argv: Iterable[str] | None = None) -> str:
             "Patient": args.patient or "",
             "Date": args.date or dt.date.today().strftime("%d/%m/%Y"),
             "Médecin": args.medecin or "",
-            "Structure": args.structure or "",
+        "Structure": args.structure or "",
         }
         report = build_report(template, overrides=overrides, header=header)
         print(report)
         return report
+
+    if args.command == "assistant":
+        result = run_interactive_assistant(templates)
+        return result
 
     parser.print_help()
     return ""
