@@ -1,0 +1,117 @@
+{
+  "templates": {
+    "arteres_membres_inferieurs": {
+      "title": "Échographie Doppler artérielle des membres inférieurs",
+      "description": "Bilan complet d'ischémie chronique ou aiguë, permettant de décrire l'arbre artériel fémoro-poplité et tibial.",
+      "metadata": {
+        "examens_cibles": [
+          "Fémoral commun",
+          "Fémoral superficiel",
+          "Poplité",
+          "Jambier antérieur",
+          "Tibio-péronier tronc",
+          "Péronier",
+          "Tibial postérieur"
+        ]
+      },
+      "sections": [
+        {
+          "name": "Contexte clinique",
+          "default": "Claudication intermittente avec douleurs au mollet droit pour une distance de marche de 200 mètres."
+        },
+        {
+          "name": "Technique",
+          "default": "Exploration en mode B, Doppler couleur et spectral avec mesure des indices de résistance."
+        },
+        {
+          "name": "Résultats détaillés",
+          "default": "- Fémoral commun: flux triphasique, pas de sténose significative.\n- Fémoral superficiel: accélération modérée du flux à 180 cm/s suggérant une sténose estimée à 50%.\n- Poplité: flux biphasique, sans sténose.\n- Réseau jambier: flux triphasique conservé sur tibial postérieur et péronier, faible signal du jambier antérieur."
+        },
+        {
+          "name": "Hémodynamique distale",
+          "default": "Index de pression systolique cheville/bras droit 0.75, gauche 1.0."
+        },
+        {
+          "name": "Conclusion",
+          "default": "Sténose fémorale superficielle droite estimée à 50%. Surveillance clinique et optimisation du traitement médical recommandées."
+        }
+      ]
+    },
+    "veines_membres_inferieurs": {
+      "title": "Échographie Doppler veineuse des membres inférieurs",
+      "description": "Examen de dépistage ou de suivi des thromboses veineuses profondes et syndrome post-thrombotique.",
+      "metadata": {
+        "examens_cibles": [
+          "Veines fémorales",
+          "Poplitées",
+          "Jambières",
+          "Saphène interne et externe"
+        ]
+      },
+      "sections": [
+        {
+          "name": "Motif de l'examen",
+          "default": "Suspicion de TVP suite à douleur et œdème du mollet gauche."
+        },
+        {
+          "name": "Technique",
+          "default": "Compression veineuse segmentaire associée au Doppler couleur et spectral."
+        },
+        {
+          "name": "Veines profondes",
+          "default": "Les veines fémorales commune et superficielle sont compressibles, flux phasique conservé."
+        },
+        {
+          "name": "Veines poplitées et jambières",
+          "default": "Veine poplitée gauche non compressible avec thrombus hypoéchogène occlusif."
+        },
+        {
+          "name": "Système veineux superficiel",
+          "default": "Saphène interne libre, pas de reflux significatif."
+        },
+        {
+          "name": "Conclusion",
+          "default": "Thrombose veineuse profonde poplitée gauche récente. Anticoagulation immédiate recommandée."
+        }
+      ]
+    },
+    "troncs_supra_aortiques": {
+      "title": "Échographie Doppler des troncs supra-aortiques",
+      "description": "Exploration des artères carotides et vertébrales pour dépistage d'athérosclérose.",
+      "metadata": {
+        "examens_cibles": [
+          "Carotide commune",
+          "Carotide interne",
+          "Carotide externe",
+          "Artère vertébrale"
+        ]
+      },
+      "sections": [
+        {
+          "name": "Contexte",
+          "default": "Bilan d'athérome chez patient asymptomatique avec facteurs de risque cardiovasculaire."
+        },
+        {
+          "name": "Technique",
+          "default": "Doppler couleur et spectral avec mesure des vitesses systoliques et diastoliques."
+        },
+        {
+          "name": "Carotide droite",
+          "default": "Plaque fibro-calcique à 40% de sténose, Vitesse systolique maximale 120 cm/s."
+        },
+        {
+          "name": "Carotide gauche",
+          "default": "Lumière régulière, flux laminaire sans sténose."
+        },
+        {
+          "name": "Artères vertébrales",
+          "default": "Flux anterograde symétrique, résistif normal."
+        },
+        {
+          "name": "Conclusion",
+          "default": "Athérome carotidien modéré droit, surveillance annuelle."
+        }
+      ]
+    }
+  }
+}
